@@ -1,0 +1,20 @@
+{
+  "name": "devpail",
+  "version": "0.1.0",
+  "description": "DevPail is what you carry all your DevTools in.",
+  "main": "src/cli.js",
+  "bin": {
+    "devpail": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "development",
+    "docker",
+    "tooling",
+    "gulp"
+  ],
+  "author": "Todd D. Esposito <todd@toddesposito.com> (https://toddesposito.com)",
+  "license": "MIT"
+}
