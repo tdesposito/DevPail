@@ -12,6 +12,8 @@ You don't need to write a custom Gulpfile for each project, but instead configur
 
 ## Installation
 
+> DevPail isn't yet published to NPM. Please be patient.
+
 Before you use **DevPail**, you will need a working installation of [Docker](https://www.docker.com).
 
 Since **DevPail** can (should?) be used across multiple projects, it's best to install it globally:
