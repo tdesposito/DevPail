@@ -1,6 +1,6 @@
 # DevPail - a bucket of development tooling
 
-**DevPail** is what you carry all your DevTools in.
+**DevPail** is what you carry all your DevTools in.  <img align="right" alt="DevPail Logo" src="images/devpail-logo-150x205.png">
 
 **DevPail** builds flexible [Docker](https://docker.com) container and
 [GulpJS](https://gulpjs.com) task runner combinations which isolate and
@@ -26,8 +26,8 @@ If you intend modify the code before use:
 
 ```console
 $ git clone https://github.com/tdesposito/DevPail.git
-cd DevPail
-npm link .
+$ cd DevPail
+$ npm link .
 ```
 
 ## Usage
@@ -36,12 +36,12 @@ Before you can start using **DevPail**, you'll need to build at least the defaul
 
 ```console
 $ devpail --build
-DevPail: Building Docker image...
+DevPail: Building image "devpail:default"...
 ... lots of stuff happens ...
-
 ```
+
 You can pass Docker ARG parameters directly on the above to customize the build.
-You only have to do this once, in general. More on that below.
+You only have to do this once, in general. More on that soon.
 
 To initialize your project, in the top-level project directory (where your
 `package.json` and other project files are):
@@ -80,8 +80,8 @@ browser-sync UI as `localhost:4444`.
 
 ### Compilers and Servers
 
-In **DevPail**'s parlance, _Server_s and __Compiler__s manage distinct parts of
-the development and build process. 
+In **DevPail**'s parlance, _Server_ and _Compiler_ objects manage distinct parts
+of the development and build process.
 
 **MORE TO COME** This section needs much work.
 
