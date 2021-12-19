@@ -9,37 +9,36 @@
 # or NodeJS14, but you can override that with the `BASEIMAGE` and `IMAGETAG`
 # args.
 ARG BASEIMAGE=nikolaik/python-nodejs
-ARG IMAGETAG=python3.8-nodejs14
+ARG PYVER=3.8
+ARG NODEVER=14
+ARG IMAGETAG=python${PYVER}-nodejs${NODEVER}}
 
 FROM --platform=linux/amd64 ${BASEIMAGE}:${IMAGETAG}
+
+RUN npm install --global gulp-cli
+
+SHELL ["/bin/bash", "-c"]
 
 #------------------------------------------------------------------------------
 # Our default base image creates a `pn` user; update this if you use a different
 # image
 ARG USER=pn
+ARG USERID=1000
+ARG GRPID=1000
 ARG HOMEDIR=/home/${USER}
 
 #------------------------------------------------------------------------------
 # By default, we expect the tooling volume to mount at ~/app
 ARG TOOLMOUNT=${HOMEDIR}/app
 
-# And we expect the project source to mount at ~/app/src
-ARG SOURCEMOUNT=${TOOLMOUNT}/src
-
-SHELL ["/bin/bash", "-c"]
-
-RUN python -m pip install --upgrade pip
-
-RUN npm install -g npm && \
-    npm install --global gulp-cli
-
-ENV PYTHONPATH="${TOOLMOUNT}/site-packages"
-ENV NODE_PATH="${TOOLMOUNT}/node_modules/bin"
+ENV PYTHONROOT="/home/pn/app/site-packages"
+ENV PYTHONPATH="${PYTHONROOT}/lib/python${PYVER}/site-packages"
+ENV NODE_PATH="/home/pn/app/node_modules/.bin"
 
 USER ${USER}
-COPY --chown=1000:1000 homedir/* ${HOMEDIR}
+COPY --chown=${USERID}:${GRPID} homedir/* ${HOMEDIR}
 WORKDIR ${TOOLMOUNT}
-RUN chown 1000:1000 ${TOOLMOUNT}
+RUN chown ${USERID}:${GRPID} ${TOOLMOUNT}
 
 EXPOSE 3000 3001 3002 3003 3004 3005 3006 3007 3008 3009
 

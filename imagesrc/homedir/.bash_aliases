@@ -26,7 +26,7 @@ function init_pail {
     echo -e "\nDevelopment environment up to date. Happy Coding!\n"
 }
 
-export PATH=$PATH:$HOME/app/site-packages/bin
+export PATH=$PATH:$PYTHONROOT/bin:$NODE_PATH
 
 if [ ! -f gulpfile.js ]; then
     init_pail
