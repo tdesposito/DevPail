@@ -34,6 +34,7 @@ ARG TOOLMOUNT=${HOMEDIR}/app
 ENV PYTHONROOT="/home/pn/app/site-packages"
 ENV PYTHONPATH="${PYTHONROOT}/lib/python${PYVER}/site-packages"
 ENV NODE_PATH="/home/pn/app/node_modules/.bin"
+ENV PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PYTHONROOT}/bin:${NODE_PATH}"
 
 USER ${USER}
 COPY --chown=${USERID}:${GRPID} homedir/* ${HOMEDIR}
