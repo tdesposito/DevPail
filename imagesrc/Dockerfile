@@ -11,7 +11,7 @@
 ARG BASEIMAGE=nikolaik/python-nodejs
 ARG PYVER=3.8
 ARG NODEVER=14
-ARG IMAGETAG=python${PYVER}-nodejs${NODEVER}}
+ARG IMAGETAG=python${PYVER}-nodejs${NODEVER}
 
 FROM --platform=linux/amd64 ${BASEIMAGE}:${IMAGETAG}
 
