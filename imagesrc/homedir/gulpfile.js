@@ -70,8 +70,7 @@ exports.default = (done) => {
 
   // Create watchers for our dev compilers, if any
   ;(cfg.prj.compilers || []).forEach((compiler, i) => {
-    // cfg.compilers[i] = smartRequire('compiler', compiler.type).dev(gulp, compiler, cfg.servers.BrowserSync)
-    smartRequire('compiler', compiler.type).dev(gulp, compiler, cfg.servers.BrowserSync)
+    cfg.compilers[i] = smartRequire('compiler', compiler.type).dev(gulp, compiler, cfg.servers.BrowserSync)
   })
 }
 exports.dev = exports.default // Just a little aliasing...
@@ -94,10 +93,9 @@ function smartRequire(module_type, module_name) {
   }
   
   if (module.install?.length) {
-    console.log(`DevPail: installing module(s): ${['install', '--save-dev', ...module.install, '--no-audit', '--no-fund']}`)
-    var proc = require('child_process').execSync(
-      'npm',
-      ['install', '--save-dev', ...module.install, '--no-audit', '--no-fund'],
+    console.log(`DevPail: installing module(s): ${module.install}`)
+    require('child_process').execSync(
+      ['npm install --save-dev', ...module.install, '--no-audit --no-fund'].join(' '),
       {
         shell: '/bin/bash',
         stdio: 'inherit',
@@ -108,5 +106,11 @@ function smartRequire(module_type, module_name) {
   return module
 }
 
-
-// TODO: add tasks from the devpail config
+// add tasks from the devpail config
+(cfg.prj.tasks || []).forEach((task, i) => {
+  exports[task.name] = (done) => {
+    var module = smartRequire('task', task.type)
+    module.task(gulp, task)
+    done()
+  }
+})
