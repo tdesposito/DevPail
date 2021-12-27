@@ -46,7 +46,7 @@ function cleanProject() {
         [
             "volume",
             "rm",
-            `${project}-DevPailTooling`
+            `${project}-DevPail-Tooling`
         ],
         {
             shell: true,
