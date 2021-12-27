@@ -1,0 +1,32 @@
+{
+  "name": "devpail-test-basic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devpail": {
+    "moduleCDN": "http://host.docker.internal:8000",
+    "compilers": [
+      {
+        "type": "html"
+      },
+      {
+        "type": "javascript"
+      },
+      {
+        "type": "css"
+      }
+    ],
+    "ports": [
+      "3000:3000"
+    ],
+    "servers": [],
+    "tasks": [],
+    "imageTag": "default"
+  }
+}
