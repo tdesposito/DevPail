@@ -7,6 +7,9 @@ const version = '1.0.0'
 const gulp = require('gulp')
 const requireUrl = require('require-from-url/sync')
 
+// Add oft-used utilities into the gulp object
+gulp.rename = require('gulp-rename')
+
 var cfg = { 
   prj: require('./package.json').devpail, 
   servers: [], 

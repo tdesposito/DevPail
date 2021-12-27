@@ -14,12 +14,11 @@ exports.build = (compiler) => {
 exports.dev = (gulp, compiler, bs) => {
     function compile_js(done) {
         gulp.src(`${source}/**/*.js`, {sourcemaps: true})
-            .pipe(rename({ extname: '.min.js' }))
+            .pipe(gulp.rename({ extname: '.min.js' }))
             .pipe(gulp.dest(target, { sourcemaps: '.' }))
             .pipe(bs.stream())
         done()
     }
-    const rename = require('gulp-rename')
     const source = compiler.source || 'src/js'
     const target = compiler.target || 'dev/static/js'
     return gulp.watch([`${source}/**/*.js`],

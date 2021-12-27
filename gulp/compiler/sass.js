@@ -16,13 +16,12 @@ exports.dev = (gulp, compiler, bs) => {
   function compile_sass(done) {
       gulp.src([`${source}/*.scss`, `${source}/*.sass`], { sourcemaps: true })
         .pipe(sass(cfg).on('error', sass.logError))
-        .pipe(rename({ extname: '.min.css' }))
+        .pipe(gulp.rename({ extname: '.min.css' }))
         .pipe(gulp.dest(target, { sourcemaps: '.' }))
         .pipe(bs.stream())
       done()
     }
   const sass = require('gulp-sass')(require('sass'))
-  const rename = require('gulp-rename')
 
   const source = compiler.source || 'src/sass'
   const target = compiler.target || 'dev/static/css'
