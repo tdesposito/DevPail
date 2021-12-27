@@ -49,9 +49,6 @@ To initialize your project, in the top-level project directory (where your
 ```console
 $ devpail --init
 DevPail: Setting defaults for your project...
-$ devpail --shell
-... lots of stuff happens ...
-(container)$ exit
 ```
 
 Now move on to configuration. Oh, look, that's right here!
@@ -71,12 +68,14 @@ as:
 
 ```json
 "devpail": {
-    "ports": [ "8000:3000", "4444:3009" ]
+    "ports": [ "3000:3000", "3009:3009" ]
 }
 ```
 
-This makes the container's browser-sync available as `localhost:8000`, and the
-browser-sync UI as `localhost:4444`.
+This makes the container's browser-sync available as `localhost:3000`, and the
+browser-sync UI as `localhost:3009`.
+
+> TODO: It seems redirecting ports as, for example, 8000:3000 breaks BrowserSync; working on it.
 
 ### Compilers and Servers
 
@@ -101,6 +100,16 @@ They are configured in the same way:
     ]
 }
 ```
+
+## Running the development environment
+
+To run the environment, once configured:
+
+```console
+$ devpail
+```
+
+Voila.
 
 ## TODO: More to work on
 
