@@ -13,7 +13,7 @@ function init_pail {
     [ ! -f package.json ] && ln -s src/package.json
     touch src/package-lock.json
     [ ! -f package-lock.json ] && ln -s src/package-lock.json
-    npm add --save-dev gulp gulp-rename require-from-url browser-sync
+    npm add --save-dev --no-audit --no-fund gulp gulp-rename require-from-url browser-sync del merge-options
     npm install
     if [ -f src/pyproject.toml ]; then
         pushd src >/dev/null

@@ -2,22 +2,44 @@
 // Copyright(C) Todd D.Esposito 2021.
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
-const version = '1.0.0'
+const fs = require('fs')
 
 const gulp = require('gulp')
 const requireUrl = require('require-from-url/sync')
 
 // Add oft-used utilities into the gulp object
 gulp.rename = require('gulp-rename')
+gulp.del = require('del')
+gulp.mergeOptions = require('merge-options')
 
 var cfg = { 
-  prj: require('./package.json').devpail, 
+  prj: require('./package.json').devpail || {}, 
   servers: [], 
   compilers: [],
 }
 
+// the `installed` object tracks which modules we've installed for plugins
+var installed = new class {
+  #data = {
+    modules: [],
+    count: 0,
+  }
+  constructor() {
+    if (fs.existsSync('./.devpail.json')) {
+      this.#data = JSON.parse(fs.readFileSync('./.devpail.json'))
+      }
+  }
+  get modules() { return this.#data.modules }
+  save() {
+    if (this.#data.modules.length !== this.#data.count) {
+      this.#data.count = this.#data.modules.length
+      fs.writeFileSync('./.devpail.json', JSON.stringify(this.#data, null, 2))
+    }
+  }
+}
 
-function confiureBrowserSync(cfg) {
+
+function configureBrowserSync(cfg) {
   const bsCfg = {
     port: 3000,
     ui: { port: 3009 },
@@ -56,14 +78,43 @@ function confiureBrowserSync(cfg) {
 
 
 exports.build = (done) => {
-  console.log("TODO: write `build`")
-  done()
+  var parallel_tasks = []
+  var buildsteps = [
+    function clean() { return gulp.del('./build/**') }
+  ]
+
+  ;(cfg.prj.servers || []).forEach((server, i) => {
+    var module = smartRequire('server', server.type)
+    // server tasks run in series unless explicitly marked as parallel
+    if (server.parallel === true) {
+      parallel_tasks.push(module.build(gulp, server))
+    } else {
+      buildsteps.push(module.build(gulp, server))
+    }
+  })
+
+  ;(cfg.prj.compilers || []).forEach((compiler, i) => {
+    var module = smartRequire('compiler', compiler.type)
+    // compiler tasks run in parallel unless explicitly marked otherwise
+    if (compiler.parallel === false) {
+      buildsteps.push(module.build(gulp, compiler))
+    } else {
+      parallel_tasks.push(module.build(gulp, compiler))
+    }
+  })
+
+  if (parallel_tasks.length) {
+    buildsteps.push(gulp.parallel(...parallel_tasks))
+  }
+
+  installed.save()
+  return gulp.series(...buildsteps)(done)
 }
 
 
 exports.default = (done) => {
   cfg.servers.BrowserSync = require('browser-sync').create()
-  const bsCfg = confiureBrowserSync(cfg)
+  const bsCfg = configureBrowserSync(cfg)
 
   // Create our server proceeses, if any
   ;(cfg.prj.servers || []).forEach((server, i) => {
@@ -75,6 +126,7 @@ exports.default = (done) => {
   ;(cfg.prj.compilers || []).forEach((compiler, i) => {
     cfg.compilers[i] = smartRequire('compiler', compiler.type).dev(gulp, compiler, cfg.servers.BrowserSync)
   })
+  installed.save()
 }
 exports.dev = exports.default // Just a little aliasing...
 
@@ -94,16 +146,20 @@ function smartRequire(module_type, module_name) {
   } else {
     module = requireUrl(importname)
   }
-  
-  if (module.install?.length) {
-    console.log(`DevPail: installing module(s): ${module.install}`)
-    require('child_process').execSync(
-      ['npm install --save-dev', ...module.install, '--no-audit --no-fund'].join(' '),
-      {
-        shell: '/bin/bash',
-        stdio: 'inherit',
-      }
-    )
+
+  if (module.dependancies?.length) {
+    var to_install = module.dependancies.filter(module => ! installed.modules.includes(module))
+    if (to_install.length) {
+      console.log(`DevPail: installing module(s): ${to_install}`)
+      require('child_process').execSync(
+        ['npm install --save-dev --no-audit --no-fund', ...to_install].join(' '),
+        {
+          shell: '/bin/bash',
+          stdio: 'inherit',
+        }
+      )
+    }
+    installed.modules.push(...to_install)
   }
 
   return module

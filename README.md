@@ -89,9 +89,10 @@ They are configured in the same way:
 "devpail": {
     "<compilers|servers>": [
       {
-        "type": "<compiler-type|server-type>",
-        "parallel": <FALSE | true>,
+        "type": "<compiler-type | server-type>",
+        "parallel": <false | true>,
         "config": {
+          "all": {...},
           "dev": {...},
           "build": {...}
         },

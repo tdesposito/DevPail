@@ -3,12 +3,33 @@
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
 
-exports.install = [
-    // "gulp-html-minifier-terser"
+exports.dependencies = [
+    "gulp-html-minifier-terser"
 ]
 
 
-exports.build = (compiler) => {
+exports.build = (gulp, compiler) => {
+    function compile_html(done) {
+        gulp.src(`${source}/**/*.html`)
+            .pipe(minify(cfg))
+            .pipe(gulp.dest(target))
+        done()
+    }
+    const source = compiler.source || 'src/html'
+    const target = compiler.target || 'build/'
+    const minify = require("gulp-html-minifier-terser")
+    const cfg = gulp.mergeOptions(
+        {
+            collapseBooleanAttributes: true,
+            collapseWhitespace: true,
+            removeAttributeQuotes: true,
+            removeComments: true,
+            removeEmptyAttributes: true,
+        },
+        compiler.config?.all || {},
+        compiler.config?.build || {}
+    )
+    return compile_html
 }
 
 

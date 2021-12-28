@@ -2,11 +2,11 @@
 // Copyright(C) Todd D.Esposito 2021.
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
-exports.install = [
+exports.dependencies = [
 ]
 
 
-exports.build = (compiler) => {
+exports.build = (gulp, server) => {
 }
 
 

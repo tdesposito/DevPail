@@ -3,11 +3,30 @@
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
 
-exports.install = [
+exports.dependencies = [
+    "gulp-clean-css"
 ]
 
 
-exports.build = (compiler) => {
+exports.build = (gulp, compiler) => {
+    function compile_css(done) {
+        gulp.src(`${source}/**/*.css`, { sourcemaps: false })
+            .pipe(gulp.rename({ extname: '.min.css' }))
+            .pipe(minify(cfg))
+            .pipe(gulp.dest(target, { sourcemaps: '.' }))
+        done()
+    }
+    const source = compiler.source || 'src/css'
+    const target = compiler.target || 'build/static/css'
+    const minify = require('gulp-clean-css')
+    const cfg = gulp.mergeOptions(
+        {
+            level: 2,
+        },
+        compiler.config?.all || {},
+        compiler.config?.build || {}
+    )
+    return compile_css
 }
 
 
