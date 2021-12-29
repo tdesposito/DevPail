@@ -16,14 +16,15 @@ function init_pail {
     npm add --save-dev --no-audit --no-fund gulp gulp-rename require-from-url browser-sync del merge-options
     npm install
     if [ -f src/pyproject.toml ]; then
-        pushd src >/dev/null
-        poetry export -f requirements.txt --output ../requirements.txt --without-hashes
-        popd >/dev/null
+        if [ ! -f pyproject.toml ]; then
+            poetry config virtualenvs.in-project true
+            ln -s src/pyproject.toml
+            poetry install
+        fi
     fi
-    [ -f requirements.txt ] && pip install --upgrade -r requirements.txt
+    mkdir ./build >/dev/null 2>&1
+    mkdir ./dev >/dev/null 2>&1
     popd >/dev/null
-    mkdir ~/app/build >/dev/null 2>&1
-    mkdir ~/app/dev >/dev/null 2>&1
     echo -e "\nDevelopment environment up to date. Happy Coding!\n"
 }
 
