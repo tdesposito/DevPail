@@ -134,21 +134,21 @@ exports.dev = exports.default // Just a little aliasing...
 exports.smartRequire = smartRequire
 function smartRequire(module_type, module_name) {
   var module
-  var importname = `${module_type}/${module_name.trim('~')}`
+  var import_name = `${module_type}/${module_name.trim('~')}`
   if (module_name.startsWith('~')) {
-    importname = `./src/${importname}`
+    import_name = `./src/${import_name}`
   } else {
     var cdn = cfg.prj.moduleCDN || "https://cdn.jsdelivr.net/gh/tdesposito/DevPail@1/gulp"
-    importname = `${cdn}/${importname}.js`
+    import_name = `${cdn}/${import_name}.js`
   }
-  if (importname.startsWith('.')) {
-    module = require(importname)
+  if (import_name.startsWith('.')) {
+    module = require(import_name)
   } else {
-    module = requireUrl(importname)
+    module = requireUrl(import_name)
   }
 
-  if (module.dependancies?.length) {
-    var to_install = module.dependancies.filter(module => ! installed.modules.includes(module))
+  if (module.dependencies?.length) {
+    var to_install = module.dependencies.filter(module => ! installed.modules.includes(module))
     if (to_install.length) {
       console.log(`DevPail: installing module(s): ${to_install}`)
       require('child_process').execSync(
