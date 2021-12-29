@@ -14,7 +14,6 @@ exports.build = (gulp, compiler) => {
       .pipe(sass(cfg).on('error', sass.logError))
       .pipe(gulp.rename({ extname: '.min.css' }))
       .pipe(gulp.dest(target))
-      .pipe(bs.stream())
     done()
   }
   const sass = require('gulp-sass')(require('sass'))
@@ -48,7 +47,6 @@ exports.dev = (gulp, compiler, bs) => {
   const target = compiler.target || 'dev/static/css'
   const cfg = gulp.mergeOptions(
     {
-      outputStyle: 'nested',
       sourceComments: true,
     },
     compiler.config?.all || {},
