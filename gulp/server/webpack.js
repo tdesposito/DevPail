@@ -13,7 +13,7 @@ exports.build = (gulp, server) => {
 }
 
 
-exports.dev = (i, server, bscfg) => {
+exports.dev = (gulp, server, bscfg, port) => {
   const path = require('path')
   const webpack = require('webpack')
   const webpackDevMiddleware = require('webpack-dev-middleware')

@@ -2,34 +2,75 @@
 // Copyright(C) Todd D.Esposito 2021.
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
+const default_cfg = {
+    entrypoint: 'application.py',
+    environ: {},
+    port: 1,
+    source: 'flaskapp',
+    target: 'flaskapp',
+}
+
 exports.dependencies = [
 ]
 
 
-exports.build = (gulp, server) => {
+exports.build = (gulp, server, target_root) => {
+    function build_flask_app(done) {
+        gulp.src([
+            `src/${cfg.source}/**/*.py`,
+            `src/${cfg.source}/**/*.html`,
+            `src/${cfg.source}/**/*.jinja2`,
+            `src/${cfg.source}/**/*.j2`,
+        ]).pipe(gulp.dest(`${target_root}${cfg.target}`))
+        done()
+    }
+    function build_flask_requirements(done) {
+        require('child_process').execSync(
+            "poetry export --format requirements.txt --output requirements.txt --without-hashes",
+            {
+                shell: '/bin/bash',
+                stdio: 'inherit'
+            }
+        )
+        gulp.src("requirements.txt").pipe(gulp.dest(target_root))
+        done()
+    }
+    const cfg = gulp.mergeOptions(default_cfg, server)
+    return gulp.parallel(build_flask_requirements, build_flask_app)
 }
 
 
-exports.dev = (i, server, bscfg) => {
+exports.dev = (gulp, server, bscfg, i) => {
     const { spawn } = require('child_process')
 
-    var port = bscfg.port + (server.port || (i + 1))
+    const cfg = gulp.mergeOptions(default_cfg, server)
 
+    // we'll launch Flask on this port...
+    var port = bscfg.port + cfg.port
+
+    // ... and have BrowserSync proxy everything to it
     bscfg.server = null
     bscfg.proxy = `http://localhost:${port}`
 
-    if (server.watch) {
-        bscfg.files.push(...server.watch)
-    }
+    gulp.watch([
+        `src/${cfg.source}/**/*.py`,
+        `src/${cfg.source}/**/*.html`,
+        `src/${cfg.source}/**/*.jinja2`,
+        `src/${cfg.source}/**/*.j2`,
+        ], 
+        {
+            ignoreInitial: true,
+            usePolling: true,
+        },
+        gulp.reloadBrowsers
+    )
 
-    var cmd = server.command.replace('{{port}}', port.toString()).split(' ')
-    var cmd_env = server.environment || {}
-    for (const [k, v] of Object.values(cmd_env)) {
-        cmd_env[k] = v.replace('{{port}}', port.toString())
-    }
+    cfg.environ.FLASK_APP = `src/${cfg.source}/${cfg.entrypoint}`
+    cfg.environ.FLASK_ENV = 'development'
+    var cmd = `poetry run flask run --port ${port}`.split(' ')
     return spawn(cmd[0], cmd.slice(1), {
         stdio: 'inherit',
         shell: '/bin/bash',
-        env: { ...process.env, ...cmd_env }
+        env: { ...process.env, ...cfg.environ }
     })
 }

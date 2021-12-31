@@ -1,5 +1,9 @@
 # scratch/ is for test data and other ephemeral stuff 
 scratch/
+# static/ may occur in tests, but aren't interesting
+**/static/
 
 __pycache__/
 *.pyc
+
+*.

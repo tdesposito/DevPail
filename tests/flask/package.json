@@ -1,0 +1,54 @@
+{
+  "name": "devpail-test-flask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devpail": {
+    "moduleCDN": "http://host.docker.internal:8000",
+    "roots": {
+      "dev": "src/flaskapp/"
+    },
+    "compilers": [
+      {
+        "type": "javascript",
+        "target": "flaskapp/static/js"
+      },
+      {
+        "type": "css",
+        "target": "flaskapp/static/css"
+      }
+    ],
+    "ports": [
+      "4000:3000"
+    ],
+    "servers": [
+      {
+        "type": "flask",
+        "source": "flaskapp",
+        "target": "flaskapp",
+        "virtenv": "poetry run",
+        "entrypoint": "application.py",
+        "port": 1,
+        "environment": {}
+      }
+    ],
+    "tasks": [],
+    "imageTag": "default"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.7",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-uglify": "^3.0.2",
+    "merge-options": "^3.0.4",
+    "require-from-url": "^3.1.3"
+  }
+}

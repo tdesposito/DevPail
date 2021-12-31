@@ -4,11 +4,11 @@
 
 
 exports.dependencies = [
-    "gulp-clean-css"
+    'gulp-clean-css'
 ]
 
 
-exports.build = (gulp, compiler) => {
+exports.build = (gulp, compiler, target_root) => {
     function compile_css(done) {
         gulp.src(`${source}/**/*.css`, { sourcemaps: false })
             .pipe(gulp.rename({ extname: '.min.css' }))
@@ -16,8 +16,8 @@ exports.build = (gulp, compiler) => {
             .pipe(gulp.dest(target, { sourcemaps: '.' }))
         done()
     }
-    const source = compiler.source || 'src/css'
-    const target = compiler.target || 'build/static/css'
+    const source = 'src/' + (compiler.source || '/css')
+    const target = target_root + (compiler.target || 'static/css')
     const minify = require('gulp-clean-css')
     const cfg = gulp.mergeOptions(
         {
@@ -30,7 +30,7 @@ exports.build = (gulp, compiler) => {
 }
 
 
-exports.dev = (gulp, compiler, bs) => {
+exports.dev = (gulp, compiler, bs, target_root) => {
     function compile_css(done) {
         gulp.src(`${source}/**/*.css`, {sourcemaps: true})
             .pipe(gulp.rename({ extname: '.min.css' }))
@@ -38,8 +38,8 @@ exports.dev = (gulp, compiler, bs) => {
             .pipe(bs.stream())
         done()
     }
-    const source = compiler.source || 'src/css'
-    const target = compiler.target || 'dev/static/css'
+    const source = 'src/' + (compiler.source || 'css')
+    const target = target_root + (compiler.target || 'static/css')
     return gulp.watch([`${source}/**/*.css`],
         {
             ignoreInitial: false,

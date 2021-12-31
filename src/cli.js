@@ -148,6 +148,7 @@ function runContainer(opts) {
     opts.params.push(...['--hostname', project])
     opts.params.push(...['-v', `${project}-DevPail-Tooling:/home/pn/app`])
     opts.params.push(...['-v', `${process.cwd()}:/home/pn/app/src`])
+    opts.params.push(...['-e', `BS_PORT=${ports[0].split(':')[0]}`])
     opts.params.push(...ports.flatMap(p => ['-p', p]))
     
     spawnSync(

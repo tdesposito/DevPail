@@ -8,7 +8,7 @@ exports.dependencies = [
 ]
 
 
-exports.build = (gulp, compiler) => {
+exports.build = (gulp, compiler, target_root) => {
   function compile_sass(done) {
     gulp.src([`${source}/*.scss`, `${source}/*.sass`], { sourcemaps: false })
       .pipe(sass(cfg).on('error', sass.logError))
@@ -18,8 +18,8 @@ exports.build = (gulp, compiler) => {
   }
   const sass = require('gulp-sass')(require('sass'))
 
-  const source = compiler.source || 'src/sass'
-  const target = compiler.target || 'build/static/css'
+  const source = 'src/' + (compiler.source || 'sass')
+  const target = target_root + (compiler.target || 'static/css')
   const cfg = gulp.mergeOptions(
     {
       outputStyle: 'compressed',
@@ -32,7 +32,7 @@ exports.build = (gulp, compiler) => {
 }
 
 
-exports.dev = (gulp, compiler, bs) => {
+exports.dev = (gulp, compiler, bs, target_root) => {
   function compile_sass(done) {
       gulp.src([`${source}/*.scss`, `${source}/*.sass`], { sourcemaps: true })
         .pipe(sass(cfg).on('error', sass.logError))
@@ -43,8 +43,8 @@ exports.dev = (gulp, compiler, bs) => {
     }
   const sass = require('gulp-sass')(require('sass'))
 
-  const source = compiler.source || 'src/sass'
-  const target = compiler.target || 'dev/static/css'
+  const source = 'src/' + (compiler.source || 'sass')
+  const target = target_root + (compiler.target || 'static/css')
   const cfg = gulp.mergeOptions(
     {
       sourceComments: true,

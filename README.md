@@ -73,9 +73,8 @@ as:
 ```
 
 This makes the container's browser-sync available as `localhost:3000`, and the
-browser-sync UI as `localhost:3009`.
-
-> TODO: It seems redirecting ports as, for example, 8000:3000 breaks BrowserSync; working on it.
+browser-sync UI as `localhost:3009`. **You MUST list the container's port 3000
+FIRST or you'll break BrowserSync.**
 
 ### Compilers and Servers
 

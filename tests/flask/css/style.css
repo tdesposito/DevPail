@@ -1,0 +1,7 @@
+:root {
+    --bg-color: hsl(291, 52%, 71%);
+}
+
+body {
+    background-color: var(--bg-color);
+}

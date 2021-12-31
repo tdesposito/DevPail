@@ -11,7 +11,7 @@ exports.build = (gulp, server) => {
 }
 
 
-exports.dev = (i, server, bscfg) => {
+exports.dev = (gulp, server, bscfg, i) => {
   const { spawn } = require('child_process')
   const { createProxyMiddleware } = require('http-proxy-middleware')
 
