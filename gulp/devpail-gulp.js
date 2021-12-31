@@ -191,6 +191,8 @@ exports.default = (done) => {
 
 process.on('exit', () => {
   for (var server in cfg.servers) {
-    server.kill()
+    if (server) {
+      server.kill()
+    }
   }
 })
