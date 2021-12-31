@@ -153,9 +153,11 @@ exports.clean = (done) => {
 
 exports['clean:dev'] = (done) => {
   if (cfg.prj.roots.dev.startsWith(cfg.prj.roots.src)) {
-    throw "This project's 'source' and 'dev' may be connected; Won't clean dev!\n"
+    console.log("\nThis project's 'source' and 'dev' may be connected; Won't clean dev!\n")
+    done()
+  } else {
+    return gulp.del(`./${cfg.prj.roots.dev}**/*`)
   }
-  return gulp.del(`./${cfg.prj.roots.dev}**/*`)
 }
 
 
