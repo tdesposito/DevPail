@@ -13,25 +13,20 @@
     "moduleCDN": "http://host.docker.internal:8000",
     "compilers": [
       {
-        "type": "html"
+        "type": "html/terser"
       },
       {
-        "type": "javascript"
+        "type": "javascript/uglify"
       },
       {
-        "type": "css"
+        "type": "css/clean-css"
       }
     ],
     "ports": [
       "3000:3000"
     ],
     "servers": [],
-    "tasks": [
-      {
-        "name": "test",
-        "type": "testtask"
-      }
-    ],
+    "tasks": [],
     "imageTag": "default"
   },
   "devDependencies": {
