@@ -1,2 +1,5 @@
 # scratch/ is for test data and other ephemeral stuff 
 scratch/
+
+__pycache__/
+*.pyc
