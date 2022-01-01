@@ -11,6 +11,7 @@ const requireUrl = require('require-from-url/sync')
 gulp.rename = require('gulp-rename')
 gulp.del = require('del')
 gulp.mergeOptions = require('merge-options')
+gulp.browserSync = require('browser-sync')
 gulp.reloadBrowsers = reloadBrowsers
 
 const default_cfg = {
@@ -45,7 +46,7 @@ var installer = new class {
     if (names && names.length) {
       names = names.filter(name => ! this.#data.modules.includes(name) )
       if (names.length) {
-        console.log(`DevPail: installing module(s): ${names}`)
+        console.log(`DevPail: installing node module(s): ${names}`)
         require('child_process').execSync(
           ['npm install --save-dev --no-audit --no-fund', ...names].join(' '),
           {
@@ -62,7 +63,7 @@ var installer = new class {
     if (names && names.length) {
       names = names.filter(name => ! this.#data.packages.includes(name))
       if (names.length) {
-        console.log(`DevPail: installing module(s): ${names}`)
+        console.log(`DevPail: installing python package(s): ${names}`)
         require('child_process').execSync(
           ['pip install --upgrade ', ...names].join(' '),
           {
@@ -94,7 +95,7 @@ function configureBrowserSync(cfg) {
       middleware: [],
     },
     socket: {
-      domain: `localhost:${process.env.BS_PORT}`,
+      domain: `localhost:${process.env.DEVPAIL_BS_PORT}`,
     },
     files: [],
     online: false,
@@ -184,7 +185,7 @@ exports['clean:dev'] = (done) => {
 
 
 exports.default = (done) => {
-  cfg.BrowserSync = require('browser-sync').create()
+  cfg.BrowserSync = gulp.browserSync.create()
   const bsCfg = configureBrowserSync(cfg)
 
   // Server tasks MAY alter BrowserSync's config
