@@ -29,24 +29,54 @@ var cfg = {
 }
 
 // the `installed` object tracks which modules we've installed for plugins
-var installed = new class {
+var installer = new class {
   #data = {
     modules: [],
+    packages: [],
   }
-  #counts = {
-    modules: 0,
-  }
+  #updated = false
   #cache_filename = `${process.cwd()}/.devpail.json`
   constructor() {
     if (fs.existsSync(this.#cache_filename)) {
       this.#data = JSON.parse(fs.readFileSync(this.#cache_filename))
-      this.#counts.modules = this.#data.modules.length
       }
   }
-  get modules() { return this.#data.modules }
+  add_dependencies(names) {
+    if (names && names.length) {
+      names = names.filter(name => ! this.#data.modules.includes(name) )
+      if (names.length) {
+        console.log(`DevPail: installing module(s): ${names}`)
+        require('child_process').execSync(
+          ['npm install --save-dev --no-audit --no-fund', ...names].join(' '),
+          {
+            shell: '/bin/bash',
+            stdio: 'inherit',
+          }
+        )
+      }
+      this.#data.modules.push(...names)
+      this.#updated = true
+    }
+  }
+  add_packages(names) {
+    if (names && names.length) {
+      names = names.filter(name => ! this.#data.packages.includes(name))
+      if (names.length) {
+        console.log(`DevPail: installing module(s): ${names}`)
+        require('child_process').execSync(
+          ['pip install --upgrade ', ...names].join(' '),
+          {
+            shell: '/bin/bash',
+            stdio: 'inherit',
+          }
+        )
+      }
+      this.#data.packages.push(...names)
+      this.#updated = true
+    }
+  }
   save() {
-    if (this.#data.modules.length !== this.#counts.modules) {
-      this.#counts.modules = this.#data.modules.length
+    if (this.#updated) {
       fs.writeFileSync(this.#cache_filename, JSON.stringify(this.#data, null, 2))
     }
   }
@@ -83,36 +113,25 @@ function reloadBrowsers(done) {
 }
 
 
-function smartRequire(module_type, module_name) {
-  var module
-  var import_name = `${module_type}/${module_name.trim('~')}`
-  if (module_name.startsWith('~')) {
+function smartRequire(plugin_type, plugin_name) {
+  var plugin
+  var import_name = `${plugin_type}/${plugin_name.trim('~')}`
+  if (plugin_name.startsWith('~')) {
     import_name = `./src/${import_name}`
   } else {
     import_name = `${cfg.prj.moduleCDN}/${import_name}.js`
   }
   if (import_name.startsWith('.')) {
-    module = require(import_name)
+    plugin = require(import_name)
   } else {
-    module = requireUrl(import_name)
+    plugin = requireUrl(import_name)
   }
 
-  if (module.dependencies?.length) {
-    var to_install = module.dependencies.filter(module => !installed.modules.includes(module))
-    if (to_install.length) {
-      console.log(`DevPail: installing module(s): ${to_install}`)
-      require('child_process').execSync(
-        ['npm install --save-dev --no-audit --no-fund', ...to_install].join(' '),
-        {
-          shell: '/bin/bash',
-          stdio: 'inherit',
-        }
-      )
-    }
-    installed.modules.push(...to_install)
-  }
+  installer.add_dependencies(plugin.dependencies)
+  installer.add_packages(plugin.packages)
+  installer.save()
 
-  return module
+  return plugin
 }
 
 
@@ -144,7 +163,7 @@ exports.build = (done) => {
     series_tasks.push(gulp.parallel(...parallel_tasks))
   }
 
-  installed.save()
+  installer.save()
   return gulp.series(...series_tasks)(done)
 }
 
@@ -182,7 +201,7 @@ exports.default = (done) => {
     cfg.compilers[i] = smartRequire('compiler', compiler.type)
       .dev(gulp, compiler, cfg.BrowserSync, cfg.prj.roots.dev)
   })
-  installed.save()
+  installer.save()
 }
 
 // add any additional tasks from the devpail config
