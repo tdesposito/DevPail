@@ -104,7 +104,20 @@ function killProject() {
 function processOptions() {
     var args = process.argv.slice(2)
     var opts = { tag: 'default', commands: [], params: [] }
-    if (args && args[0] === '--build') {
+    if (args && args[0] === '--version') {
+        return 'version 1.1.0'
+    } else if (args && args[0] === '--help') {
+        console.log("usage: devpail [options] [gulp task(s)...]\n")
+        console.log("Options:")
+        console.log("\t--build - build a new DevPail docker image")
+        console.log("\t--init - add/update a 'devpail' key in the local package.json")
+        console.log("\t--clean - remove the project's docker volume")
+        console.log("\t--shell - shell into the DevPail environment")
+        console.log("\t--kill - kill the running DevPail environment")
+        console.log("\n")
+        console.log("With no options specified, everything on the command\nline will be arguments to the Gulp process")
+        console.log("\n")
+    } else if (args && args[0] === '--build') {
         args.shift()
         opts.build = true
         if (args.length) {
