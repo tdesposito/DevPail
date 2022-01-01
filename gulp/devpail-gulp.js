@@ -32,18 +32,21 @@ var cfg = {
 var installed = new class {
   #data = {
     modules: [],
-    count: 0,
+  }
+  #counts = {
+    modules: 0,
   }
   #cache_filename = `${process.cwd()}/.devpail.json`
   constructor() {
     if (fs.existsSync(this.#cache_filename)) {
       this.#data = JSON.parse(fs.readFileSync(this.#cache_filename))
+      this.#counts.modules = this.#data.modules.length
       }
   }
   get modules() { return this.#data.modules }
   save() {
-    if (this.#data.modules.length !== this.#data.count) {
-      this.#data.count = this.#data.modules.length
+    if (this.#data.modules.length !== this.#counts.modules) {
+      this.#counts.modules = this.#data.modules.length
       fs.writeFileSync(this.#cache_filename, JSON.stringify(this.#data, null, 2))
     }
   }
@@ -185,9 +188,7 @@ exports.default = (done) => {
 // add any additional tasks from the devpail config
 (cfg.prj.tasks || []).forEach((task, i) => {
   exports[task.name] = (done) => {
-    var module = smartRequire('task', task.type)
-    module.task(gulp, task, cfg.prj.roots)
-    done()
+    smartRequire('task', task.type).task(gulp, task, cfg.prj.roots)(done)
   }
 })
 
