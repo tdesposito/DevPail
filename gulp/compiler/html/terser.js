@@ -35,7 +35,7 @@ exports.build = (gulp, compiler, target_root) => {
 
 exports.dev = (gulp, compiler, bs, target_root) => {
     function compile_html(done) {
-        gulp.src(`${source}/**/*.html`)
+        gulp.src(`${source}/**/*.html`, { since: gulp.lastRun(compile_html)})
             .pipe(gulp.dest(target))
         done()
     }

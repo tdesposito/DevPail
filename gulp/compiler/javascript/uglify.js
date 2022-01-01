@@ -29,7 +29,7 @@ exports.build = (gulp, compiler, target_root) => {
 
 exports.dev = (gulp, compiler, bs, target_root) => {
     function compile_js(done) {
-        gulp.src(`${source}/**/*.js`, {sourcemaps: true})
+        gulp.src(`${source}/**/*.js`, { sourcemaps: true, since: gulp.lastRun(compile_js) })
             .pipe(gulp.rename({ extname: '.min.js' }))
             .pipe(gulp.dest(target, { sourcemaps: '.' }))
             .pipe(bs.stream())
