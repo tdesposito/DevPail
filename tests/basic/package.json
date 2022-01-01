@@ -26,7 +26,13 @@
       "3000:3000"
     ],
     "servers": [],
-    "tasks": [],
+    "tasks": [
+      {
+        "name": "deploy",
+        "type": "deploy/aws-s3",
+        "bucket": "devpail-test-basic"
+      }
+    ],
     "imageTag": "default"
   },
   "devDependencies": {
