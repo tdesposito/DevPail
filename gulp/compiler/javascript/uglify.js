@@ -9,7 +9,7 @@ exports.dependencies = [
 
 
 exports.build = (gulp, compiler, target_root) => {
-    function compile_js(done) {
+    function compile_js_uglify(done) {
         gulp.src(`${source}/**/*.js`, { sourcemaps: false })
             .pipe(gulp.rename({ extname: '.min.js' }))
             .pipe(minify(cfg))
@@ -23,13 +23,13 @@ exports.build = (gulp, compiler, target_root) => {
         compiler.config?.all || {},
         compiler.config?.dev || {}
     )
-    return compile_js
+    return compile_js_uglify
 }
 
 
 exports.dev = (gulp, compiler, bs, target_root) => {
-    function compile_js(done) {
-        gulp.src(`${source}/**/*.js`, { sourcemaps: true, since: gulp.lastRun(compile_js) })
+    function compile_js_uglify(done) {
+        gulp.src(`${source}/**/*.js`, { sourcemaps: true, since: gulp.lastRun(compile_js_uglify) })
             .pipe(gulp.rename({ extname: '.min.js' }))
             .pipe(gulp.dest(target, { sourcemaps: '.' }))
             .pipe(bs.stream())
@@ -42,6 +42,6 @@ exports.dev = (gulp, compiler, bs, target_root) => {
             ignoreInitial: false,
             usePolling: true,
         },
-        compile_js
+        compile_js_uglify
     )
 }

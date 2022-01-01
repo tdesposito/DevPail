@@ -9,7 +9,7 @@ exports.dependencies = [
 
 
 exports.build = (gulp, compiler, target_root) => {
-    function compile_css(done) {
+    function compile_clean_css(done) {
         gulp.src(`${source}/**/*.css`, { sourcemaps: false })
             .pipe(gulp.rename({ extname: '.min.css' }))
             .pipe(minify(cfg))
@@ -26,13 +26,13 @@ exports.build = (gulp, compiler, target_root) => {
         compiler.config?.all || {},
         compiler.config?.build || {}
     )
-    return compile_css
+    return compile_clean_css
 }
 
 
 exports.dev = (gulp, compiler, bs, target_root) => {
-    function compile_css(done) {
-        gulp.src(`${source}/**/*.css`, { sourcemaps: true, since: gulp.lastRun(compile_css) })
+    function compile_clean_css(done) {
+        gulp.src(`${source}/**/*.css`, { sourcemaps: true, since: gulp.lastRun(compile_clean_css) })
             .pipe(gulp.rename({ extname: '.min.css' }))
             .pipe(gulp.dest(target, { sourcemaps: '.' }))
             .pipe(bs.stream())
@@ -45,6 +45,6 @@ exports.dev = (gulp, compiler, bs, target_root) => {
             ignoreInitial: false,
             usePolling: true,
         },
-        compile_css
+        compile_clean_css
     )
 }

@@ -9,7 +9,7 @@ exports.dependencies = [
 
 
 exports.build = (gulp, compiler, target_root) => {
-    function compile_html(done) {
+    function compile_html_terser(done) {
         gulp.src(`${source}/**/*.html`)
             .pipe(minify(cfg))
             .pipe(gulp.dest(target))
@@ -29,13 +29,13 @@ exports.build = (gulp, compiler, target_root) => {
         compiler.config?.all || {},
         compiler.config?.build || {}
     )
-    return compile_html
+    return compile_html_terser
 }
 
 
 exports.dev = (gulp, compiler, bs, target_root) => {
-    function compile_html(done) {
-        gulp.src(`${source}/**/*.html`, { since: gulp.lastRun(compile_html)})
+    function compile_html_terser(done) {
+        gulp.src(`${source}/**/*.html`, { since: gulp.lastRun(compile_html_terser)})
             .pipe(gulp.dest(target))
         done()
     }
@@ -46,6 +46,6 @@ exports.dev = (gulp, compiler, bs, target_root) => {
             ignoreInitial: false,
             usePolling: true,
         },
-        compile_html
+        compile_html_terser
     ).on('change', bs.reload)
 }
