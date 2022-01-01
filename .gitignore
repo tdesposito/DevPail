@@ -1,9 +1,15 @@
-# scratch/ is for test data and other ephemeral stuff 
+# dotenv files
+.env
+.env.*
+
+# scratch/ is for ephemeral stuff 
 scratch/
+
+# secret/ is... secret
+secret/
+
 # static/ may occur in tests, but aren't interesting
 **/static/
 
 __pycache__/
 *.pyc
-
-*.
