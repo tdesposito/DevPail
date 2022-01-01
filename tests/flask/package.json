@@ -11,9 +11,6 @@
   "license": "ISC",
   "devpail": {
     "moduleCDN": "http://host.docker.internal:8000",
-    "roots": {
-      "dev": "src/flaskapp/"
-    },
     "compilers": [
       {
         "type": "javascript/uglify",
@@ -31,8 +28,6 @@
       {
         "type": "flask",
         "source": "flaskapp",
-        "target": "flaskapp",
-        "virtenv": "poetry run",
         "entrypoint": "application.py",
         "port": 1,
         "environment": {}

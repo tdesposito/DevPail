@@ -41,7 +41,16 @@ exports.build = (gulp, server, target_root) => {
 
 
 exports.dev = (gulp, server, bscfg, i) => {
-    const { spawn } = require('child_process')
+    function sync_app(done) {
+        gulp.src([
+            `src/${cfg.source}/**/*.py`,
+            `src/${cfg.source}/**/*.html`,
+            `src/${cfg.source}/**/*.jinja2`,
+            `src/${cfg.source}/**/*.j2`,
+        ], { since: gulp.lastRun(sync_app) }
+        ).pipe(gulp.dest(`dev/${cfg.target}`))
+        done()
+    }
 
     const cfg = gulp.mergeOptions(default_cfg, server)
 
@@ -59,16 +68,16 @@ exports.dev = (gulp, server, bscfg, i) => {
         `src/${cfg.source}/**/*.j2`,
         ], 
         {
-            ignoreInitial: true,
+            ignoreInitial: false,
             usePolling: true,
         },
-        gulp.reloadBrowsers
+        gulp.series(sync_app, gulp.reloadBrowsers)
     )
 
-    cfg.environ.FLASK_APP = `src/${cfg.source}/${cfg.entrypoint}`
+    cfg.environ.FLASK_APP = `dev/${cfg.target}/${cfg.entrypoint}`
     cfg.environ.FLASK_ENV = 'development'
     var cmd = `poetry run flask run --port ${port}`.split(' ')
-    return spawn(cmd[0], cmd.slice(1), {
+    return require('child_process').spawn(cmd[0], cmd.slice(1), {
         stdio: 'inherit',
         shell: '/bin/bash',
         env: { ...process.env, ...cfg.environ }
