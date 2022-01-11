@@ -39,7 +39,8 @@ ENV NODE_PATH="${TOOLMOUNT}/node_modules/.bin"
 ENV PATH="/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PYTHONROOT}/bin:${NODE_PATH}"
 
 USER ${USER}
-COPY --chown=${USERID}:${GRPID} homedir/* ${HOMEDIR}
+COPY --chown=${USERID}:${GRPID} homedir ${HOMEDIR}
+
 WORKDIR ${TOOLMOUNT}
 RUN chown ${USERID}:${GRPID} ${TOOLMOUNT} && \
     ln -sf ${TOOLMOUNT}/local ${HOMEDIR}/.local
