@@ -14,6 +14,7 @@ exports.dependencies = [
   'style-loader', 'css-loader',
 ]
 
+
 function getBaseConfig(isDevMode, server) {
   return {
     mode: isDevMode ? 'development' : 'production',
@@ -48,6 +49,7 @@ function getBaseConfig(isDevMode, server) {
   }
 }
 
+
 exports.build = (gulp, server) => {
   function build_react_bundle(done) {
     return webpackCompiler.run(done)
@@ -56,6 +58,7 @@ exports.build = (gulp, server) => {
   const webpack = require('webpack')
   const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+  const indexTemplate = server.indexTemplate || `${server.source || 'reactapp'}/index.html`
   const build_config = {
     entry: `${process.cwd()}/src/${server.source || 'reactapp'}/index.js`,
     output: {
@@ -63,8 +66,8 @@ exports.build = (gulp, server) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        filename: `${process.cwd()}/build/index.html`,
-        template: `${process.cwd()}/src/${server.source || 'reactapp'}/index.html`,
+        filename: `${process.cwd()}/build/${server.indexBuildTarget || 'index.html'}`,
+        template: `${process.cwd()}/src/${indexTemplate}`,
       }),
     ],
   }
@@ -84,6 +87,7 @@ exports.dev = (gulp, server, bscfg) => {
   const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
   const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+  const indexTemplate = server.indexTemplate || `${server.source || 'reactapp'}/index.html`
   const dev_config = {
     devtool: 'source-map',
     entry: [
@@ -97,7 +101,7 @@ exports.dev = (gulp, server, bscfg) => {
       }),
       new HtmlWebpackPlugin({
         filename: `${process.cwd()}/dev/index.html`,
-        template: `${process.cwd()}/src/${server.source || 'reactapp'}/index.html`,
+        template:  `${process.cwd()}/src/${indexTemplate}`,
       }),
     ],
     watch: true,
@@ -128,22 +132,5 @@ exports.dev = (gulp, server, bscfg) => {
     )
   )
 
-  // bscfg.files.push(`${process.cwd()}/src/${server.source || 'reactapp'}/**/*.[tj]sx?`)
-
   return null   // there's no external server to manage
-}
-
-function hmrFixupProxy(req, res, next) {
-  // correct deep paths on reload; ensure our HMR files are served from '/'
-  if (! req.url.startsWith('/static')) {
-    if (req.url.endsWith('.js') ||
-    req.url.endsWith('.map') ||
-    req.url.endsWith('.json') ||
-    req.url.endsWith('__webpack_hmr')) {
-      req.url = '/' + req.url.split('/').slice(-1)[0]
-    } else {
-      req.url = '/'
-    }
-  }
-  next()
 }

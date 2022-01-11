@@ -1,0 +1,12 @@
+body {
+    --bg-color: hsl(96, 79%, 85%);
+    background-color: var(--bg-color);
+}
+.api {
+    font-size: 1.2rem;
+    margin: 2em;
+    padding: 1em;
+    background-color: hsl(273, 85%, 87%);
+    border-radius: 3em;
+    border: black solid 2px;
+}

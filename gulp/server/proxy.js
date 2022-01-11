@@ -7,35 +7,24 @@ exports.dependencies = [
 ]
 
 
-exports.build = (gulp, server) => {
+exports.build = (gulp, server, name) => {
+  // Proxy has NO build stage.
+  function proxy_build_noop(done) { done(); }
+  return proxy_build_noop
 }
 
 
-exports.dev = (gulp, server, bscfg, i) => {
-  const { spawn } = require('child_process')
+exports.dev = (gulp, server, bscfg) => {
   const { createProxyMiddleware } = require('http-proxy-middleware')
 
-  var port = bscfg.port + (server.port || (i + 1))
+  var port = bscfg.port + (server.port || 1)
 
   var proxycfg = {
     target: `http://localhost:${port}`,
     changeOrigin: true,
     ...(server.proxycfg || {}),
   }
-  bscfg.server.middleware.unshift(server.entrypoints, createProxyMiddleware(proxycfg))
-
-  if (server.watch) {
-    bscfg.files.push(...server.watch)
-  }
-
-  var cmd = server.command.replace('{{port}}', port.toString()).split(' ')
-  var cmd_env = server.environment || {}
-  for (const [k, v] of Object.values(cmd_env)) {
-    cmd_env[k] = v.replace('{{port}}', port.toString())
-  }
-  return spawn(cmd[0], cmd.slice(1), {
-    stdio: 'inherit',
-    shell: '/bin/bash',
-    env: { ...process.env, ...cmd_env }
-  })
+  bscfg.server.middleware.push(createProxyMiddleware(server.entrypoints, proxycfg))
+  
+  return null   // there's no external server to manage
 }
