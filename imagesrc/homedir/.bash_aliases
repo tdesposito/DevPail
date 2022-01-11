@@ -6,15 +6,30 @@ alias ll='ls -al'
 alias less='more'
 
 function init_pail {
+    local base_modules=(
+        'gulp'
+        'gulp-rename'
+        'require-from-url'
+        'browser-sync'
+        'del'
+        'merge-options'
+        )
+
     echo -e "\nDevPail(container): Initializing development environment...\n"
     pushd $HOME/app >/dev/null
+
+    # DevPail base setup
     cp ../gulpfile.js . >/dev/null 2>&1     # Always get the latest from the container
-    [ ! -d local ] && mkdir local
-    [ ! -f package.json ] && ln -s src/package.json
+    mkdir local build dev deploy >/dev/null 2>&1
+    
+    # Node setup
     touch src/package-lock.json
+    [ ! -f package.json ] && ln -s src/package.json
     [ ! -f package-lock.json ] && ln -s src/package-lock.json
-    npm add --save-dev --no-audit --no-fund gulp gulp-rename require-from-url browser-sync del merge-options
+    npm add --save-dev --no-audit --no-fund ${base_modules[*]}
     npm install
+    
+    # Python setup
     if [ -f src/pyproject.toml ]; then
         if [ ! -f pyproject.toml ]; then
             poetry config virtualenvs.in-project true
@@ -22,8 +37,7 @@ function init_pail {
             poetry install
         fi
     fi
-    mkdir ./build >/dev/null 2>&1
-    mkdir ./dev >/dev/null 2>&1
+
     popd >/dev/null
     echo -e "\nDevelopment environment up to date. Happy Coding!\n"
 }
