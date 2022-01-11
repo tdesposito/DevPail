@@ -228,8 +228,8 @@ function serveCDN(opts) {
         [
             "--quiet",
             "serve",
-            "-p",
-            port
+            "-l",
+            `tcp://0.0.0.0:${port}`
         ],
         {
             cwd: path.resolve(__dirname, '..', 'gulp'),
