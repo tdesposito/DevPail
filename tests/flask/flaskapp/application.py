@@ -9,3 +9,5 @@ def index():
 @app.get('/about/')
 def about():
     return render_template('about.html.j2')
+
+application = app

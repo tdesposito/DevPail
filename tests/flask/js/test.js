@@ -1,3 +1,3 @@
 function calljs() {
-    alert('Yes, it works!')
+    alert('DevPail/Flask: Yes, it works!')
 }
