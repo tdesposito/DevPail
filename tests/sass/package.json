@@ -13,13 +13,13 @@
     "moduleCDN": "http://host.docker.internal:8000",
     "compilers": [
       {
-        "type": "html/terser"
+        "gulp": "compiler/html/terser"
       },
       {
-        "type": "javascript/uglify"
+        "gulp": "compiler/javascript/uglify"
       },
       {
-        "type": "css/sass"
+        "gulp": "compiler/css/sass"
       }
     ],
     "ports": [
