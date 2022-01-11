@@ -136,15 +136,16 @@ function processOptions() {
     if (args && args[0] === '--version') {
         return 'version 1.1.0'
     } else if (args && args[0] === '--help') {
-        console.log("usage: devpail [options] [gulp task(s)...]\n")
+        console.log("usage: devpail [options] [gulp option(s)/task(s)...]\n")
         console.log("Options:")
-        console.log("\t--build - build a new DevPail docker image")
-        console.log("\t--init - add/update a 'devpail' key in the local package.json")
+        console.log("\t--build [tag] [args...] - build a new DevPail docker image")
+        console.log("\t--cdn [port] - serve the included Gulp plugins locally")
         console.log("\t--clean - remove the project's docker volume")
-        console.log("\t--shell - shell into the DevPail environment")
+        console.log("\t--init - add/update a 'devpail' key in the local package.json")
         console.log("\t--kill - kill the running DevPail environment")
+        console.log("\t--shell - shell into the DevPail environment")
         console.log("\n")
-        console.log("With no options specified, everything on the command\nline will be arguments to the Gulp process")
+        console.log("With none of the above specified, everything on the command\nline will be arguments to the Gulp process.")
         console.log("\n")
     } else if (args && args[0] === '--build') {
         args.shift()
@@ -154,6 +155,9 @@ function processOptions() {
         }
         opts.vars = args
         return buildImage(opts)
+    } else if (args && args[0] === '--cdn') {
+        args.shift()
+        serveCDN(args)
     } else if (args && args[0] === '--init') {
         return initProject()
     } else if (args && args[0] === '--clean') {
@@ -215,3 +219,22 @@ function runContainer(opts) {
     return null
 }
 
+
+function serveCDN(opts) {
+    var port = opts[0] || "8000"
+    console.log(`DevPail: serving plugins on host.docker.internal:${port}...`)
+    spawnSync(
+        "npx",
+        [
+            "--quiet",
+            "serve",
+            "-p",
+            port
+        ],
+        {
+            cwd: path.resolve(__dirname, '..', 'gulp'),
+            shell: true,
+            stdio: 'inherit',
+        }
+    )
+}
