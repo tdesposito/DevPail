@@ -8,15 +8,14 @@ exports.dependencies = [
 ]
 
 
-exports.build = (gulp, compiler, target_root) => {
-    function compile_html_terser(done) {
-        gulp.src(`${source}/**/*.html`)
+exports.build = (gulp, compiler) => {
+    function compile_html_terser() {
+        return gulp.src(`${source}/**/*.html`)
             .pipe(minify(cfg))
             .pipe(gulp.dest(target))
-        done()
     }
     const source = 'src/' + (compiler.source || 'html')
-    const target = target_root + (compiler.target || '')
+    const target = 'build/' + (compiler.target || '')
     const minify = require('gulp-html-minifier-terser')
     const cfg = gulp.mergeOptions(
         {
@@ -33,14 +32,13 @@ exports.build = (gulp, compiler, target_root) => {
 }
 
 
-exports.dev = (gulp, compiler, bs, target_root) => {
-    function compile_html_terser(done) {
-        gulp.src(`${source}/**/*.html`, { since: gulp.lastRun(compile_html_terser)})
+exports.dev = (gulp, compiler, bs) => {
+    function compile_html_terser() {
+        return gulp.src(`${source}/**/*.html`, { since: gulp.lastRun(compile_html_terser)})
             .pipe(gulp.dest(target))
-        done()
     }
     const source = 'src/' + (compiler.source || 'html')
-    const target = target_root + (compiler.target || '')
+    const target = 'dev/' + (compiler.target || '')
     return gulp.watch([`${source}/**/*.html`],
         {
             ignoreInitial: false,

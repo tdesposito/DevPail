@@ -8,18 +8,17 @@ exports.dependencies = [
 ]
 
 
-exports.build = (gulp, compiler, target_root) => {
-  function compile_sass(done) {
-    gulp.src([`${source}/*.scss`, `${source}/*.sass`], { sourcemaps: false })
+exports.build = (gulp, compiler) => {
+  function compile_sass() {
+    return gulp.src(`${source}/*.{scss,sass}`, { sourcemaps: false })
       .pipe(sass(cfg).on('error', sass.logError))
       .pipe(gulp.rename({ extname: '.min.css' }))
       .pipe(gulp.dest(target))
-    done()
   }
   const sass = require('gulp-sass')(require('sass'))
 
   const source = 'src/' + (compiler.source || 'sass')
-  const target = target_root + (compiler.target || 'static/css')
+  const target = 'build/' + (compiler.target || 'static/css')
   const cfg = gulp.mergeOptions(
     {
       outputStyle: 'compressed',
@@ -32,19 +31,18 @@ exports.build = (gulp, compiler, target_root) => {
 }
 
 
-exports.dev = (gulp, compiler, bs, target_root) => {
-  function compile_sass(done) {
-      gulp.src([`${source}/*.scss`, `${source}/*.sass`], { sourcemaps: true })
+exports.dev = (gulp, compiler, bs) => {
+  function compile_sass() {
+    return gulp.src(`${source}/*.{scss,sass}`, { sourcemaps: true })
         .pipe(sass(cfg).on('error', sass.logError))
         .pipe(gulp.rename({ extname: '.min.css' }))
         .pipe(gulp.dest(target, { sourcemaps: '.' }))
         .pipe(bs.stream())
-      done()
     }
   const sass = require('gulp-sass')(require('sass'))
 
   const source = 'src/' + (compiler.source || 'sass')
-  const target = target_root + (compiler.target || 'static/css')
+  const target = 'dev/' + (compiler.target || 'static/css')
   const cfg = gulp.mergeOptions(
     {
       sourceComments: true,
@@ -53,7 +51,7 @@ exports.dev = (gulp, compiler, bs, target_root) => {
     compiler.config?.development || {}
   )
   return gulp.watch(
-    [`${source}/**/*.scss`, `${source}/**/*.sass`],
+    [`${source}/*.{scss,sass}`],
     {
       ignoreInitial: false,
       usePolling: true,
