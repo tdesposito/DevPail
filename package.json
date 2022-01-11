@@ -16,5 +16,8 @@
     "gulp"
   ],
   "author": "Todd D. Esposito <todd@toddesposito.com> (https://toddesposito.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^10.0.0"
+  }
 }
