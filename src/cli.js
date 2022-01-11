@@ -5,18 +5,44 @@
 // Distributed under the MIT License (see https://opensource.org/licenses/MIT).
 
 const { spawnSync, execSync } = require('child_process')
-const fs = require('fs')
+const fs = require('fs-extra')
+const os = require('os')
 const path = require('path')
 
 const status = processOptions()
 if (status) {
-    console.log(`DevPail: ${status}`)
+    console.log(`\nDevPail: ${status}\n`)
 }
 
 function buildImage(opts) {
     console.log(`DevPail: Building image "devpail:${opts.tag}"...`)
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'devpail-'))
+    const fromDir = os.homedir()
+    const toDir = `${tmpDir}/homedir`
+
+    fs.copySync(path.resolve(__dirname, '..', 'imagesrc'), tmpDir)
+
+    if (fs.existsSync(`${fromDir}/.ssh`)) {
+        fs.copySync(`${fromDir}/.ssh`, `${toDir}/.ssh`, { dereference: true })
+    }
+
+    for (var file of ['config', 'credentials']) {
+        if (fs.existsSync(`${fromDir}/.aws/${file}`)) {
+            fs.ensureDirSync(`${toDir}/.aws`)
+            fs.copySync(`${fromDir}/.aws/${file}`, `${toDir}/.aws/${file}`, { dereference: true })
+        }
+    }
+
+    for (var file of ['.gitconfig', '.git-credentials']) {
+        if (fs.existsSync(`${fromDir}/${file}`)) {
+            fs.copySync(`${fromDir}/${file}`, `${toDir}/${file}`, { dereference: true })
+        }
+    }
+
+
     spawnopts = {
-        cwd: path.resolve(__dirname, '..', 'imagesrc'),
+        cwd: tmpDir,
         shell: true,
         stdio: 'inherit'
     }
@@ -32,9 +58,12 @@ function buildImage(opts) {
         ],
         spawnopts
     )
-    console.log("DevPail: Cleaning dangling images...")
+    console.log("DevPail: Cleaning up...")
     spawnSync("docker", "image prune --force".split(' '), spawnopts)
-    return null
+
+    fs.rmSync(tmpDir, { recursive: true })
+
+    return `WARNING: Do NOT publish or share "devpail:${opts.tag}"\n\tIt contains YOUR SECRETS, possibly including ssh keys, aws tokens, and git credentials!`
 }
 
 
