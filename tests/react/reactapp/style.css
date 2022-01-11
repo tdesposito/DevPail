@@ -1,0 +1,4 @@
+body {
+    --bg-color: hsl(273, 85%, 87%);
+    background-color: var(--bg-color);
+}
