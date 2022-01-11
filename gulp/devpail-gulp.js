@@ -16,11 +16,6 @@ gulp.reloadBrowsers = reloadBrowsers
 
 const default_cfg = {
   moduleCDN: 'https://cdn.jsdelivr.net/gh/tdesposito/DevPail@1/gulp',
-  roots: {
-    build: 'build/',
-    dev: 'dev/',
-    src: 'src/'
-  },
 }
 
 var cfg = { 
@@ -65,7 +60,7 @@ var installer = new class {
       if (names.length) {
         console.log(`DevPail: installing python package(s): ${names}`)
         require('child_process').execSync(
-          ['pip install --upgrade ', ...names].join(' '),
+          ['pip install --upgrade --no-warn-script-location', ...names].join(' '),
           {
             shell: '/bin/bash',
             stdio: 'inherit',
@@ -79,6 +74,7 @@ var installer = new class {
   save() {
     if (this.#updated) {
       fs.writeFileSync(this.#cache_filename, JSON.stringify(this.#data, null, 2))
+      this.#updated = false
     }
   }
 }
@@ -90,7 +86,7 @@ function configureBrowserSync(cfg) {
     ui: { port: 3009 },
     open: false,
     server: {
-      baseDir: cfg.prj.roots.dev,
+      baseDir: 'dev/',
       routes: {},
       middleware: [],
     },
@@ -114,9 +110,9 @@ function reloadBrowsers(done) {
 }
 
 
-function smartRequire(plugin_type, plugin_name) {
+function smartRequire(plugin_name) {
   var plugin
-  var import_name = `${plugin_type}/${plugin_name.trim('~')}`
+  var import_name = plugin_name.trim('~')
   if (plugin_name.startsWith('~')) {
     import_name = `./src/${import_name}`
   } else {
@@ -138,25 +134,25 @@ function smartRequire(plugin_type, plugin_name) {
 
 exports.build = (done) => {
   var parallel_tasks = []
-  var series_tasks = [ 'clean' ]
+  var series_tasks = [ gulp.parallel('clean', 'clean:deploy') ]
 
   ;(cfg.prj.servers || []).forEach((server, i) => {
-    var module = smartRequire('server', server.type)
+    var module = smartRequire(server.gulp)
     // server tasks run in series unless explicitly marked as parallel
     if (server.parallel === true) {
-      parallel_tasks.push(module.build(gulp, server, cfg.prj.roots.build))
+      parallel_tasks.push(module.build(gulp, server))
     } else {
-      series_tasks.push(module.build(gulp, server, cfg.prj.roots.build))
+      series_tasks.push(module.build(gulp, server))
     }
   })
 
   ;(cfg.prj.compilers || []).forEach((compiler, i) => {
-    var module = smartRequire('compiler', compiler.type)
+    var module = smartRequire(compiler.gulp)
     // compiler tasks run in parallel unless explicitly marked otherwise
     if (compiler.parallel === false) {
-      series_tasks.push(module.build(gulp, compiler, cfg.prj.roots.build))
+      series_tasks.push(module.build(gulp, compiler))
     } else {
-      parallel_tasks.push(module.build(gulp, compiler, cfg.prj.roots.build))
+      parallel_tasks.push(module.build(gulp, compiler))
     }
   })
 
@@ -164,23 +160,22 @@ exports.build = (done) => {
     series_tasks.push(gulp.parallel(...parallel_tasks))
   }
 
-  installer.save()
   return gulp.series(...series_tasks)(done)
 }
 
 
 exports.clean = (done) => {
-  return gulp.del(`./${cfg.prj.roots.build}**/*`)
+  return gulp.del([`./build/**/*`, `./build/**/.*`])
 }
 
 
 exports['clean:dev'] = (done) => {
-  if (cfg.prj.roots.dev.startsWith(cfg.prj.roots.src)) {
-    console.log("\nThis project's 'source' and 'dev' may be connected; Won't clean dev!\n")
-    done()
-  } else {
-    return gulp.del(`./${cfg.prj.roots.dev}**/*`)
-  }
+  return gulp.del([`./dev/**/*`, `./dev/**/.*`])
+}
+
+
+exports['clean:deploy'] = (done) => {
+  return gulp.del([`./deploy/**/*`, `./deploy/**/.*`])
 }
 
 
@@ -189,27 +184,30 @@ exports.default = (done) => {
   const bsCfg = configureBrowserSync(cfg)
 
   // Server tasks MAY alter BrowserSync's config
-  ;(cfg.prj.servers || []).forEach((server, i) => {
+  ;(cfg.prj.servers || []).forEach((server) => {
     cfg.servers.push(
-      smartRequire('server', server.type).dev(gulp, server, bsCfg, i)
+      smartRequire(server.gulp).dev(gulp, server, bsCfg)
     )
   })
 
   cfg.BrowserSync.init(bsCfg)
 
   // Compiler tasks MAY interact with the running BrowserSync
-  ;(cfg.prj.compilers || []).forEach((compiler, i) => {
-    cfg.compilers[i] = smartRequire('compiler', compiler.type)
-      .dev(gulp, compiler, cfg.BrowserSync, cfg.prj.roots.dev)
+  ;(cfg.prj.compilers || []).forEach((compiler) => {
+    cfg.compilers.push(
+      smartRequire(compiler.gulp)
+        .dev(gulp, compiler, cfg.BrowserSync)
+    )
   })
-  installer.save()
 }
 
 // add any additional tasks from the devpail config
-(cfg.prj.tasks || []).forEach((task, i) => {
-  exports[task.name] = (done) => {
-    smartRequire('task', task.type).task(gulp, task, cfg.prj.roots)(done)
-  }
+(cfg.prj.tasks || []).forEach((task) => {
+  (task.names || [task.name]).forEach(name => {
+    exports[name] = (done) => {
+      smartRequire(task.gulp).task(gulp, task, name)(done)
+    }
+  })
 })
 
 process.on('exit', () => {
