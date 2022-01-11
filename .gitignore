@@ -13,3 +13,6 @@ secret/
 
 __pycache__/
 *.pyc
+
+# node artifacts
+node_modules/
