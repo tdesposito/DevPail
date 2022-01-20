@@ -69,7 +69,7 @@ function buildImage(opts) {
 
 function cleanProject() {
     console.log('DevPail: cleaning up artifacts...')
-    var project = path.basename(process.cwd())
+    var project = createProjectName()
     spawnSync(
         "docker",
         [
@@ -83,6 +83,13 @@ function cleanProject() {
         }
     )
     return null
+}
+
+
+function createProjectName() {
+    return path.basename(process.cwd()) 
+        + '-' 
+        + require('crypto').createHash('md5').update(process.cwd()).digest('hex').slice(0, 8)
 }
 
 
@@ -108,7 +115,7 @@ function initProject() {
 
 
 function killProject() {
-    var project = path.basename(process.cwd())
+    var project = createProjectName()
     var id = execSync(`docker container ls --filter "name=${project}-DevPail" --format "{{.ID}}"`).toString()
     if (id) {
         console.log(`DevPail: killing active container for ${project}...`)
@@ -181,7 +188,7 @@ function processOptions() {
 
 function runContainer(opts) {
     var tag, ports
-    var project = path.basename(process.cwd())
+    var project = createProjectName()
     try {
         pkg = require(`${process.cwd()}/package.json`)
         tag = pkg.devpail?.imageTag || 'default'
