@@ -15,7 +15,7 @@ gulp.browserSync = require('browser-sync')
 gulp.reloadBrowsers = reloadBrowsers
 
 const default_cfg = {
-  moduleCDN: 'https://cdn.jsdelivr.net/gh/tdesposito/DevPail@1/gulp',
+  moduleCDN: 'https://cdn.jsdelivr.net/gh/tdesposito/DevPail@2/gulp',
 }
 
 var cfg = { 
@@ -24,7 +24,7 @@ var cfg = {
   compilers: [],
 }
 
-// the `installed` object tracks which modules we've installed for plugins
+// the `installed` object tracks what we've installed for plugins
 var installer = new class {
   #data = {
     modules: [],
@@ -136,6 +136,8 @@ exports.build = (done) => {
   var parallel_tasks = []
   var series_tasks = [ gulp.parallel('clean', 'clean:deploy') ]
 
+  // TODO: add pre-build hooks
+
   ;(cfg.prj.servers || []).forEach((server, i) => {
     var module = smartRequire(server.gulp)
     // server tasks run in series unless explicitly marked as parallel
@@ -159,6 +161,8 @@ exports.build = (done) => {
   if (parallel_tasks.length) {
     series_tasks.push(gulp.parallel(...parallel_tasks))
   }
+
+  // TODO: add post-build hooks
 
   return gulp.series(...series_tasks)(done)
 }
