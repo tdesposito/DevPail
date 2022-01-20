@@ -15,17 +15,25 @@ function init_pail {
         'merge-options'
         )
 
+    local make_dirs=(
+        'local'
+        'build'
+        'dev'
+        'deploy'
+    )
+
     echo -e "\nDevPail(container): Initializing development environment...\n"
     pushd $HOME/app >/dev/null
 
     # DevPail base setup
     cp ../gulpfile.js . >/dev/null 2>&1     # Always get the latest from the container
-    mkdir local build dev deploy >/dev/null 2>&1
+    mkdir ${make_dirs[*]} >/dev/null 2>&1
     
     # Node setup
     touch src/package-lock.json
     [ ! -f package.json ] && ln -s src/package.json
     [ ! -f package-lock.json ] && ln -s src/package-lock.json
+    [ ! -f .npmrc ] && ln -s src/.npmrc
     npm add --save-dev --no-audit --no-fund ${base_modules[*]}
     npm install
     
