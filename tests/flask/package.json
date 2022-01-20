@@ -12,15 +12,11 @@
   "devpail": {
     "moduleCDN": "http://host.docker.internal:8000",
     "compilers": [
-      {
-        "gulp": "compiler/javascript/uglify"
-      },
-      {
-        "gulp": "compiler/css/clean-css"
-      }
+      "compiler/javascript/uglify",
+      "compiler/css/clean-css"
     ],
     "ports": [
-      "4000:3000"
+      "3000:3000"
     ],
     "servers": [
       {
@@ -33,7 +29,11 @@
     ],
     "tasks": [
       {
-        "names": ["deploy", "deploy:production", "deploy:config"],
+        "names": [
+          "deploy",
+          "deploy:production",
+          "deploy:config"
+        ],
         "gulp": "task/deploy/aws-elasticbeanstalk",
         "create": {
           "keyname": "aws-eb",
@@ -60,17 +60,5 @@
       }
     ],
     "imageTag": "default"
-  },
-  "devDependencies": {
-    "browser-sync": "^2.27.7",
-    "del": "^6.0.0",
-    "fs-extra": "^10.0.0",
-    "gulp": "^4.0.2",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-rename": "^2.0.0",
-    "gulp-uglify": "^3.0.2",
-    "merge-options": "^3.0.4",
-    "require-from-url": "^3.1.3",
-    "yaml": "^1.10.2"
   }
 }

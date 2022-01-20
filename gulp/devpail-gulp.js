@@ -139,22 +139,34 @@ exports.build = (done) => {
   // TODO: add pre-build hooks
 
   ;(cfg.prj.servers || []).forEach((server, i) => {
-    var module = smartRequire(server.gulp)
-    // server tasks run in series unless explicitly marked as parallel
-    if (server.parallel === true) {
-      parallel_tasks.push(module.build(gulp, server))
+    var plugin, pluginConfig = {}
+    if (typeof server === 'string') {
+      plugin = smartRequire(server)
     } else {
-      series_tasks.push(module.build(gulp, server))
+      plugin = smartRequire(server.gulp)
+      pluginConfig = server
+    }
+    // server tasks run in series unless explicitly marked as parallel
+    if (pluginConfig.parallel === true) {
+      parallel_tasks.push(plugin.build(gulp, pluginConfig))
+    } else {
+      series_tasks.push(plugin.build(gulp, pluginConfig))
     }
   })
 
   ;(cfg.prj.compilers || []).forEach((compiler, i) => {
-    var module = smartRequire(compiler.gulp)
-    // compiler tasks run in parallel unless explicitly marked otherwise
-    if (compiler.parallel === false) {
-      series_tasks.push(module.build(gulp, compiler))
+    var plugin, pluginConfig = {}
+    if (typeof compiler === 'string') {
+      plugin = smartRequire(compiler)
     } else {
-      parallel_tasks.push(module.build(gulp, compiler))
+      plugin = smartRequire(compiler.gulp)
+      pluginConfig = compiler
+    }
+    // compiler tasks run in parallel unless explicitly marked otherwise
+    if (pluginConfig.parallel === false) {
+      series_tasks.push(plugin.build(gulp, pluginConfig))
+    } else {
+      parallel_tasks.push(plugin.build(gulp, pluginConfig))
     }
   })
 
@@ -189,19 +201,32 @@ exports.default = (done) => {
 
   // Server tasks MAY alter BrowserSync's config
   ;(cfg.prj.servers || []).forEach((server) => {
-    cfg.servers.push(
-      smartRequire(server.gulp).dev(gulp, server, bsCfg)
-    )
+    if (typeof server === 'string') {
+      cfg.servers.push(
+        smartRequire(server).dev(gulp, {}, bsCfg)
+      )
+    } else {
+      cfg.servers.push(
+        smartRequire(server.gulp).dev(gulp, server, bsCfg)
+      )
+    }
   })
 
   cfg.BrowserSync.init(bsCfg)
 
   // Compiler tasks MAY interact with the running BrowserSync
   ;(cfg.prj.compilers || []).forEach((compiler) => {
-    cfg.compilers.push(
-      smartRequire(compiler.gulp)
-        .dev(gulp, compiler, cfg.BrowserSync)
-    )
+    if (typeof compiler === 'string') {
+      cfg.compilers.push(
+        smartRequire(compiler)
+          .dev(gulp, {}, cfg.BrowserSync)
+      )
+    } else {
+      cfg.compilers.push(
+        smartRequire(compiler.gulp)
+          .dev(gulp, compiler, cfg.BrowserSync)
+      )
+    }
   })
 }
 

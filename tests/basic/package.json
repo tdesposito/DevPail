@@ -12,18 +12,10 @@
   "devpail": {
     "moduleCDN": "http://host.docker.internal:8000",
     "compilers": [
-      {
-        "gulp": "compiler/html/terser"
-      },
-      {
-        "gulp": "compiler/javascript/uglify"
-      },
-      {
-        "gulp": "compiler/css/clean-css"
-      },
-      {
-        "gulp": "compiler/image/imagemin"
-      }
+      "compiler/html/terser",
+      "compiler/javascript/uglify",
+      "compiler/css/clean-css",
+      "compiler/image/imagemin"
     ],
     "ports": [
       "3000:3000"
