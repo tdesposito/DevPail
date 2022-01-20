@@ -33,8 +33,24 @@ exports.task = (gulp, cfg, name) => {
             yaml.stringify(gulp.mergeOptions(default_config, cfg.config))
         )
         
-        // TODO: handle extensions
-        
+        if (cfg.extensions?.clb) {
+            if (!fs.existsSync('build/.ebextensions')) {
+                fs.mkdirSync('build/.ebextensions')
+            }
+            fs.writeFileSync(
+                'build/.ebextensions/securelistener-clb.config',
+                yaml.stringify({
+                    option_settings: {
+                        "aws:elb:listener:443": {
+                            ListenerProtocol: "HTTPS",
+                            InstancePort: 80,
+                            SSLCertificateId: cfg.extensions.clb[env_name]
+                        }
+                    }
+                })
+            )
+        }
+
         // auto-populate environment.config from .env.build
         if (fs.existsSync('src/.env.build')) {
             const envVars = require('dotenv').parse(fs.readFileSync('src/.env.build'))
@@ -42,7 +58,9 @@ exports.task = (gulp, cfg, name) => {
             Object.entries(envVars).forEach(e => {
                 environConfig.option_settings.push({option_name: e[0], value: e[1]})
             })
-            fs.mkdirSync('build/.ebextensions')
+            if (!fs.existsSync('build/.ebextensions')) {
+                fs.mkdirSync('build/.ebextensions')
+            }
             fs.writeFileSync('build/.ebextensions/environment.config', yaml.stringify(environConfig))
         }
         done()
@@ -73,12 +91,13 @@ exports.task = (gulp, cfg, name) => {
         done()
     }
 
+    const env_name = name.split(':')[1] || 'staging'
+
     if (name.endsWith(':config')) {
         return gulp.series(configure_eb)
     }
 
     const cp = require('child_process')
-    const env_name = name.split(':')[1] || 'staging'
     const cp_opts = {
         cwd: `${process.cwd()}/build`,
         shell: '/bin/bash',
