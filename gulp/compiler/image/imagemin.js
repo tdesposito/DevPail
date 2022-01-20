@@ -10,10 +10,6 @@ exports.dependencies = [
 const extensions = '*.{jpg,jpeg,png,svg}'
 
 exports.build = (gulp, compiler) => {
-    // async function loadIM() {
-    //     const imagemin = (await import('gulp-imagemin')).default
-    //     return imagemin
-    // }
     function compile_imagemin() {
         return gulp.src(`${source}/**/${extensions}`)
             .pipe(imagemin(cfg))
