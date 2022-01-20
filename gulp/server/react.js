@@ -9,9 +9,9 @@ exports.dependencies = [
   '@pmmmwh/react-refresh-webpack-plugin',
   'html-webpack-plugin',
   'react-refresh',
-  'babel-loader',
-  '@babel/core', '@babel/preset-env', '@babel/preset-react',
+  'babel-loader', '@babel/core', '@babel/preset-env', '@babel/preset-react',
   'style-loader', 'css-loader',
+  'path', 'process'
 ]
 
 
@@ -54,6 +54,7 @@ exports.build = (gulp, server) => {
   function build_react_bundle(done) {
     return webpackCompiler.run(done)
   }
+  
   process.env.NODE_ENV = 'production'
   const webpack = require('webpack')
   const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -69,6 +70,7 @@ exports.build = (gulp, server) => {
         filename: `${process.cwd()}/build/${server.indexBuildTarget || 'index.html'}`,
         template: `${process.cwd()}/src/${indexTemplate}`,
       }),
+      new webpack.ProvidePlugin({ process: 'process/browser' }),
     ],
   }
 
@@ -103,6 +105,7 @@ exports.dev = (gulp, server, bscfg) => {
         filename: `${process.cwd()}/dev/index.html`,
         template:  `${process.cwd()}/src/${indexTemplate}`,
       }),
+      new webpack.ProvidePlugin({process: 'process/browser'}),
     ],
     watch: true,
     watchOptions: {
@@ -113,7 +116,6 @@ exports.dev = (gulp, server, bscfg) => {
   const config = gulp.mergeOptions(getBaseConfig(true, server), dev_config, server.config?.all || {}, server.config?.dev || {})
   const webpackCompiler = webpack(config, (err, stat) => {})
 
-  // bscfg.server.middleware.push(hmrFixupProxy)
   bscfg.server.middleware.push(
     WebpackDevMiddleware(webpackCompiler, 
       {
