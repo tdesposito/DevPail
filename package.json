@@ -1,6 +1,6 @@
 {
   "name": "devpail",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha.0",
   "description": "DevPail is what you carry all your DevTools in.",
   "main": "src/cli.js",
   "bin": {
@@ -19,5 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^10.0.0"
-  }
+  },
+  "cvbump:previousRelease": "0.1.0"
 }
