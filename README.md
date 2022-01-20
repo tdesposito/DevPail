@@ -1,5 +1,12 @@
 # DevPail - a bucket of development tooling
 
+This README is for version *2.0.0-alpha.0*.
+
+[![GitHub package.json version (main)](https://img.shields.io/github/package-json/v/tdesposito/DevPail/main?label=Version)](https://github.com/tdesposito/DevPail)
+[![npm](https://img.shields.io/npm/v/devpail)](https://npmjs.org/package/devpail)
+![License](https://img.shields.io/github/license/tdesposito/DevPail)
+![npm](https://img.shields.io/npm/dm/devpail)
+
 **DevPail** is what you carry all your DevTools in.  <img align="right" alt="DevPail Logo" src="images/devpail-logo-150x205.png">
 
 **DevPail** builds flexible [Docker](https://docker.com) container and
@@ -8,11 +15,7 @@ encapsulate your projects' development environments, so you don't have to.
 
 You don't need to write a custom Gulpfile for each project, but instead configure the operation of Gulp via directives in `package.json` which enable various plugins.
 
-> This tools is very young and under active development. Don't expect it to be or remain stable in the short term.
-
 ## Installation
-
-> DevPail isn't yet published to NPM. Please be patient.
 
 Before you use **DevPail**, you will need a working installation of [Docker](https://www.docker.com).
 

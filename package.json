@@ -24,6 +24,12 @@
   "cvbump": {
     "changelog": "CHANGELOG.md",
     "showMessageBody": true,
-    "update": []
+    "update": [
+      {
+        "file": "README.md",
+        "search": "This README is for version *{{version}*."
+      }
+      
+    ]
   }
 }
