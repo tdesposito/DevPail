@@ -16,3 +16,5 @@ __pycache__/
 
 # node artifacts
 node_modules/
+
+tests/**/package-lock.json
