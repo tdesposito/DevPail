@@ -20,7 +20,7 @@
   "dependencies": {
     "fs-extra": "^10.0.0"
   },
-  "cvbump:previousRelease": "0.1.0",
+  "cvbump:previousRelease": "1.1.0",
   "cvbump": {
     "changelog": "CHANGELOG.md",
     "showMessageBody": true,
