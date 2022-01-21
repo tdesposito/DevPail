@@ -1,3 +1,7 @@
+// This file is part of DevPail (https://github.com/tdesposito/DevPail)
+// Copyright(C) Todd D.Esposito 2021.
+// Distributed under the MIT License(see https://opensource.org/licenses/MIT).
+
 exports.dependencies = []
 exports.packages = []
 
