@@ -177,6 +177,34 @@ CDN" with these steps:
 1. Set `devpail.moduleCDN` to `http://host.docker.internal:8000`, or whatever port you specified above.
 1. Run `devpail` as usual!
 
+## MetaTasks
+
+Some tasks are composed of other tasks; these are *metatasks*. For example, the default `build` task is implemented by running the `clean:build` task, followed by the `devpail:build` task.
+
+You define your own *metatasks*, including **overriding** a built-in *metatask*, thusly:
+
+```json
+"devpail": {
+  "metatasks": {
+    "my-meta-task": [
+      "task-1",
+      [ "task-2", "task-3" ], 
+      "task-4"
+    ]
+  }
+}
+```
+
+This creates a new task, *my-meta-task*, which runs *task-1*, then runs *task-2*
+and *task-3* simultaneously (in parallel), then runs *task-4*.
+
+The default *metatasks* are:
+
+* `build`: 'clean:build', 'devpail:build'
+* `clean`: [ 'clean:build', 'clean:dev' ]
+
+
+
 ## Running the development environment
 
 To run the environment, once configured:
