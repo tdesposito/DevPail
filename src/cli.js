@@ -34,7 +34,7 @@ function buildImage(opts) {
         }
     }
 
-    for (var file of ['.gitconfig', '.git-credentials']) {
+    for (var file of ['.gitconfig', '.git-credentials', '.serverlessrc']) {
         if (fs.existsSync(`${fromDir}/${file}`)) {
             fs.copySync(`${fromDir}/${file}`, `${toDir}/${file}`, { dereference: true })
         }
