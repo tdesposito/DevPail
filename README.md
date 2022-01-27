@@ -290,7 +290,7 @@ consider [Buying Me A Coffee][bmac]!
 
 ## License
 
-Please see the [License](/LICENSE).
+Please see the [License](LICENSE).
 
 <!-- Links  -->
 [bmac]: https://www.buymeacoffee.com/tdesposito
