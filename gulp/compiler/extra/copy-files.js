@@ -31,7 +31,6 @@ exports.dev = (gulp, compiler, bs) => {
     if (compiler.buildOnly) {
         return copy_extra_files_noop
     }
-    console.log(`watching ${source}`)
 
     return gulp.watch(source,
         {
