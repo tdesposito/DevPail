@@ -3,6 +3,7 @@
 // Distributed under the MIT License(see https://opensource.org/licenses/MIT).
 
 const fs = require('fs')
+const { parallel } = require('gulp')
 
 const gulp = require('gulp')
 const requireUrl = require('require-from-url/sync')
@@ -112,16 +113,10 @@ function reloadBrowsers(done) {
 
 function smartRequire(plugin_name) {
   var plugin
-  var import_name = plugin_name.trim('~')
   if (plugin_name.startsWith('~')) {
-    import_name = `./src/${import_name}`
+    plugin = require(`${process.cwd()}/src/${plugin_name.replace(/^~/, '')}`)
   } else {
-    import_name = `${cfg.prj.moduleCDN}/${import_name}.js`
-  }
-  if (import_name.startsWith('.')) {
-    plugin = require(import_name)
-  } else {
-    plugin = requireUrl(import_name)
+    plugin = requireUrl(`${cfg.prj.moduleCDN}/${plugin_name}.js`)
   }
 
   installer.add_dependencies(plugin.dependencies)
@@ -132,18 +127,16 @@ function smartRequire(plugin_name) {
 }
 
 
-exports.build = (done) => {
+exports['devpail:build'] = (done) => {
   var parallel_tasks = []
-  var series_tasks = [ gulp.parallel('clean', 'clean:deploy') ]
-
-  // TODO: add pre-build hooks
+  var series_tasks = []
 
   ;(cfg.prj.servers || []).forEach((server, i) => {
     var plugin, pluginConfig = {}
     if (typeof server === 'string') {
       plugin = smartRequire(server)
     } else {
-      plugin = smartRequire(server.gulp)
+      plugin = smartRequire(server.plugin)
       pluginConfig = server
     }
     // server tasks run in series unless explicitly marked as parallel
@@ -159,7 +152,7 @@ exports.build = (done) => {
     if (typeof compiler === 'string') {
       plugin = smartRequire(compiler)
     } else {
-      plugin = smartRequire(compiler.gulp)
+      plugin = smartRequire(compiler.plugin)
       pluginConfig = compiler
     }
     // compiler tasks run in parallel unless explicitly marked otherwise
@@ -174,13 +167,11 @@ exports.build = (done) => {
     series_tasks.push(gulp.parallel(...parallel_tasks))
   }
 
-  // TODO: add post-build hooks
-
   return gulp.series(...series_tasks)(done)
 }
 
 
-exports.clean = (done) => {
+exports['clean:build'] = (done) => {
   return gulp.del([`./build/**/*`, `./build/**/.*`])
 }
 
@@ -190,24 +181,19 @@ exports['clean:dev'] = (done) => {
 }
 
 
-exports['clean:deploy'] = (done) => {
-  return gulp.del([`./deploy/**/*`, `./deploy/**/.*`])
-}
-
-
 exports.default = (done) => {
   cfg.BrowserSync = gulp.browserSync.create()
   const bsCfg = configureBrowserSync(cfg)
 
   // Server tasks MAY alter BrowserSync's config
-  ;(cfg.prj.servers || []).forEach((server) => {
+  ; (cfg.prj.servers || []).forEach((server) => {
     if (typeof server === 'string') {
       cfg.servers.push(
         smartRequire(server).dev(gulp, {}, bsCfg)
       )
     } else {
       cfg.servers.push(
-        smartRequire(server.gulp).dev(gulp, server, bsCfg)
+        smartRequire(server.plugin).dev(gulp, server, bsCfg)
       )
     }
   })
@@ -215,7 +201,7 @@ exports.default = (done) => {
   cfg.BrowserSync.init(bsCfg)
 
   // Compiler tasks MAY interact with the running BrowserSync
-  ;(cfg.prj.compilers || []).forEach((compiler) => {
+  ; (cfg.prj.compilers || []).forEach((compiler) => {
     if (typeof compiler === 'string') {
       cfg.compilers.push(
         smartRequire(compiler)
@@ -223,7 +209,7 @@ exports.default = (done) => {
       )
     } else {
       cfg.compilers.push(
-        smartRequire(compiler.gulp)
+        smartRequire(compiler.plugin)
           .dev(gulp, compiler, cfg.BrowserSync)
       )
     }
@@ -231,12 +217,37 @@ exports.default = (done) => {
 }
 
 // add any additional tasks from the devpail config
-(cfg.prj.tasks || []).forEach((task) => {
-  (task.names || [task.name]).forEach(name => {
+; (cfg.prj.tasks || []).forEach((task) => {
+  var names = (typeof task.name === 'string' ? [task.name] : task.name)
+  names.forEach(name => {
     exports[name] = (done) => {
-      smartRequire(task.gulp).task(gulp, task, name)(done)
+      smartRequire(task.plugin).task(gulp, task, name)(done)
     }
   })
+})
+
+const default_metas = {
+  build: [
+    'clean:build',
+    'devpail:build'
+  ],
+  clean: [[ 'clean:build', 'clean:dev' ]]
+}
+
+// add meta-tasks
+; (Object.entries(gulp.mergeOptions(default_metas, cfg.prj.metatasks))).forEach(([name, tasks]) => {
+  var task_list = []
+  tasks.forEach(task => {
+    if (typeof task === 'string') {
+      task_list.push(task)
+    } else {
+      function parallel_tasks(tasks) {
+        return (done) => gulp.parallel(...tasks)(done)
+      }
+      task_list.push(parallel_tasks(task))
+    }
+  })
+  exports[name] = (done) => gulp.series(...task_list)(done)
 })
 
 process.on('exit', () => {
