@@ -20,6 +20,7 @@ function init_pail {
         'build'
         'dev'
         'deploy'
+        '.pycache'
     )
 
     echo -e "\nDevPail(container): Initializing development environment...\n"
@@ -45,6 +46,9 @@ function init_pail {
             poetry install
         fi
     fi
+
+    # Python niftification
+    export PYTHONPYCACHEPREFIX=~/app/.pycache
 
     popd >/dev/null
     echo -e "\nDevelopment environment up to date. Happy Coding!\n"
