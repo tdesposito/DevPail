@@ -27,9 +27,8 @@
     "update": [
       {
         "file": "README.md",
-        "search": "This README is for version *{{version}*."
+        "search": "*This is version **{{version}}**.*"
       }
-      
     ]
   }
 }
