@@ -23,11 +23,11 @@
     "servers": [],
     "tasks": [
       {
-        "names": [
+        "name": [
           "deploy",
           "deploy:setup"
         ],
-        "gulp": "task/deploy/aws-s3",
+        "plugin": "task/deploy/aws-s3",
         "bucket": "devpail-test-basic"
       }
     ],

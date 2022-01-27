@@ -20,7 +20,7 @@
     ],
     "servers": [
       {
-        "gulp": "server/flask",
+        "plugin": "server/flask",
         "source": "flaskapp",
         "entrypoint": "application.py",
         "port": 1,
@@ -34,7 +34,7 @@
           "deploy:production",
           "deploy:config"
         ],
-        "gulp": "task/deploy/aws-elasticbeanstalk",
+        "plugin": "task/deploy/aws-elasticbeanstalk",
         "create": {
           "keyname": "aws-eb",
           "platform": "python-3.8",
