@@ -89,7 +89,11 @@ function cleanProject() {
 function createProjectName() {
     return path.basename(process.cwd()) 
         + '-' 
-        + require('crypto').createHash('md5').update(process.cwd()).digest('hex').slice(0, 8)
+        + require('crypto')
+            .createHash('md5')
+            .update(process.cwd())
+            .digest('hex')
+            .slice(0, 8)
 }
 
 
@@ -156,7 +160,6 @@ function processOptions() {
         console.log("\n")
     } else if (args && args[0] === '--build') {
         args.shift()
-        opts.build = true
         if (args.length) {
             opts.tag = args.shift()
         }
