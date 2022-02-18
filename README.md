@@ -1,6 +1,6 @@
 # DevPail - a bucket of development tooling
 
-*This is version **2.0.0**.*
+*This is version **2.1.1**.*
 
 [![GitHub package.json version][shield-gh-json-version]][gh-repo]
 [![License][shield-gh-license]][gh-license]

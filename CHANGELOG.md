@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 * This project adheres to [Semantic Versioning](https://semver.org/)
 * This project uses [cvbump](https://github.com/tdesposito/ChangelogVersionTool) to maintain this changelog.
 
+## [2.1.1](https://github.com/tdesposito/DevPail/releases/tag/v2.1.1) - 2022-02-18
+
+### Fixed
+
+* Fixed metatask injection ([e1f0b1c](https://github.com/tdesposito/DevPail/commit/e1f0b1c83345bd06fe254f94156134e5574804fb) by Todd Esposito)
+
 ## [2.1.0](https://github.com/tdesposito/DevPail/releases/tag/v2.1.0) - 2022-02-18
 
 ### Added
