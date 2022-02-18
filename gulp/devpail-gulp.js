@@ -226,16 +226,17 @@ exports.default = (done) => {
   })
 })
 
-const default_metas = {
+const metas = {
   build: [
     'clean:build',
     'devpail:build'
   ],
-  clean: [[ 'clean:build', 'clean:dev' ]]
+  clean: [[ 'clean:build', 'clean:dev' ]],
+  ...(cfg.prj.metatasks || {})
 }
 
 // add meta-tasks
-; (Object.entries(...default_metas, ...(cfg.prj.metatasks || {}))).forEach(([name, tasks]) => {
+; (Object.entries(metas)).forEach(([name, tasks]) => {
   var task_list = []
   tasks.forEach(task => {
     if (typeof task === 'string') {
