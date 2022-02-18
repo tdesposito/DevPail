@@ -51,7 +51,7 @@ exports.dev = (gulp, compiler, bs) => {
     compiler.config?.development || {}
   )
   return gulp.watch(
-    [`${source}/*.{scss,sass}`],
+    [`${source}/**/*.{scss,sass}`],
     {
       ignoreInitial: false,
       usePolling: true,
