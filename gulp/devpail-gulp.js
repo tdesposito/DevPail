@@ -235,7 +235,7 @@ const default_metas = {
 }
 
 // add meta-tasks
-; (Object.entries(gulp.mergeOptions(default_metas, cfg.prj.metatasks))).forEach(([name, tasks]) => {
+; (Object.entries(...default_metas, ...(cfg.prj.metatasks || {}))).forEach(([name, tasks]) => {
   var task_list = []
   tasks.forEach(task => {
     if (typeof task === 'string') {
