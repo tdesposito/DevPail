@@ -19,7 +19,6 @@ function init_pail {
         'local'
         'build'
         'dev'
-        'deploy'
         '.pycache'
     )
 
