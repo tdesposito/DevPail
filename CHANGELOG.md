@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 * This project adheres to [Semantic Versioning](https://semver.org/)
 * This project uses [cvbump](https://github.com/tdesposito/ChangelogVersionTool) to maintain this changelog.
 
+## [2.1.0](https://github.com/tdesposito/DevPail/releases/tag/v2.1.0) - 2022-02-18
+
+### Added
+
+* Add pycache redirection ([7042399](https://github.com/tdesposito/DevPail/commit/704239975f206f5220b3b48a3deb24f429a76b5a) by Todd Esposito)
+
+### Fixed
+
+* Fixed compiler/css/sass to watch subdirs ([80e2c8f](https://github.com/tdesposito/DevPail/commit/80e2c8f0ca6e117e2788b4662e582f0361b1b814) by Todd Esposito)
+* Fixed metatask config to replace rather than merge the defaults ([c82543c](https://github.com/tdesposito/DevPail/commit/c82543ccd49c6e768e8c4ed8f363d3497ec08357) by Todd Esposito)
+
+### Other Updates
+
+* Updated init dir list - `deploy` no longer needed ([3a81900](https://github.com/tdesposito/DevPail/commit/3a819003e250d2f76b8260d95273950fed7f4ca7) by Todd Esposito)
+
 ## [2.0.0](https://github.com/tdesposito/DevPail/releases/tag/v2.0.0) - 2022-01-27
 
 ### Added
